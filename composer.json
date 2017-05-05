@@ -1,0 +1,32 @@
+{
+	"name": "okatsuralau/cakephp-mixpanel",
+	"description": "CakePHP plugin providing easy integration with Mixpanel's analytics",
+	"keywords": ["mixpanel", "cakephp"],
+	"type": "cakephp-plugin",
+	"homepage": "https://github.com/okatsuralau/CakePHP-Mixpanel",
+	"license": "MIT",
+	"authors": [
+		{
+			"name": "Gabriel Lau"
+		}
+	],
+	"require" : {
+		"php" : ">=5.6",
+		"mixpanel/mixpanel-php": "^2.6"
+	},
+	"require-dev" : {
+		"phpunit/phpunit": "^6.1",
+		"cakephp/cakephp": "^3.2"
+	},
+	"autoload": {
+	    "psr-4": {
+	        "CakephpMixpanel\\": "src"
+	    }
+	},
+	"autoload-dev": {
+		"psr-4": {
+			"Tools\\Test\\": "tests",
+			"TestApp\\": "tests/TestApp"
+		}
+	}
+}
