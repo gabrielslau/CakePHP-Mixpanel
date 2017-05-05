@@ -31,7 +31,7 @@ Add the plugin configurations in your `config/app.php` or `config/app_custom.php
 return [
     //...
     
-    'CakephpMixpanel' => [
+    'Mixpanel' => [
         'token' => YOUR_TOKEN_HERE
     ]
 ]
@@ -44,7 +44,7 @@ public function initialize()
 {
     parent::initialize();
 
-    $this->loadComponent('CakephpMixpanel');
+    $this->loadComponent('CakephpMixpanel.Mixpanel');
 }
 ```
 
