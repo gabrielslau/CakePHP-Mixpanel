@@ -72,7 +72,7 @@ class MixpanelComponent extends Component
     public function identify($id)
     {
         $this->getInstance()->identify($id);
-        $this->config('id', $id);
+        $this->config('identify', $id);
     }
 
     public function name_tag($name)
@@ -83,7 +83,6 @@ class MixpanelComponent extends Component
     public function people($id, array $properties = [])
     {
         $this->getInstance()->people->set($id, $properties);
-        $this->config('people.identify', $id);
         $this->config('people.set', $properties);
     }
 

@@ -61,7 +61,6 @@ class MixpanelHelper extends Helper
 
         // People
         if (isset($settings['people'])) {
-            $trackers[] = sprintf('mixpanel.people.identify(%s);', json_encode($settings['people']['identify']));
             $trackers[] = sprintf('mixpanel.people.set(%s);', json_encode($settings['people']['set']));
         }
 

@@ -87,10 +87,10 @@ class MixpanelHelperTest extends TestCase
 
         $embed = $this->Mixpanel->embed();
         $expected = <<<HTML
-<script>mixpanel.init("token"); mixpanel.name_tag("john");
+<script>mixpanel.init("token"); mixpanel.identify("id1");
+mixpanel.name_tag("john");
 mixpanel.register({"number":1});
 mixpanel.track("test_event", {"number":1});
-mixpanel.people.identify("id1");
 mixpanel.people.set({"email":"john@doe.com"});</script>
 HTML;
 
