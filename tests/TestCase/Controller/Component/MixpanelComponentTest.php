@@ -28,6 +28,7 @@ class MixpanelComponentTest extends TestCase
 
         $this->Controller = new Controller();
         $this->Controller->loadComponent('CakephpMixpanel.Mixpanel');
+        $this->Controller->startupProcess();
 
         $this->Mixpanel = $this->Controller->Mixpanel;
     }

@@ -11,14 +11,15 @@ use CakephpMixpanel\View\Helper\MixpanelHelper;
 /**
  * Class MixpanelHelperTest
  *
- * @property \CakephpMixpanel\Test\TestApp\Controller\TestController $Controller
+ * @property \Cake\Controller\Controller $Controller
+ * @property \CakephpMixpanel\View\Helper\MixpanelHelper $Mixpanel
  *
  * @package CakephpMixpanel\Test\TestCase\View\Helper
  */
 class MixpanelHelperTest extends TestCase
 {
     /**
-     * Image Helper
+     * Helper
      *
      * @var \CakephpMixpanel\View\Helper\MixpanelHelper
      */
@@ -39,8 +40,8 @@ class MixpanelHelperTest extends TestCase
         Configure::write('Mixpanel.token', 'token');
 
         $this->Controller = new Controller();
-        $this->Controller->startupProcess();
         $this->Controller->loadComponent('CakephpMixpanel.Mixpanel');
+        $this->Controller->startupProcess();
 
         // setup events to render in javascript
         $this->Controller->Mixpanel->track('test_event', ['number' => 1]);

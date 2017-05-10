@@ -14,18 +14,19 @@ class MixpanelComponent extends Component
      */
     private $Mixpanel;
 
-    public function initialize(array $config)
+    public function startup(Event $event)
     {
-        parent::initialize($config);
-
         $this->config([
             'token' => Configure::read('Mixpanel.token'),
             'options' => (array)Configure::read('Mixpanel.options'),
             'properties' => [],
         ]);
 
-        if (!$this->request->session()->check('Mixpanel.events')) {
-            $this->request->session()->write('Mixpanel.events', []);
+        /** @var \Cake\Network\Session $session */
+        $session = $event->subject()->request->session();
+
+        if (!$session->check('Mixpanel.events')) {
+            $session->write('Mixpanel.events', []);
         }
 
         $this->Mixpanel = Mixpanel::getInstance($this->config('token'), $this->config('options'));
@@ -33,11 +34,14 @@ class MixpanelComponent extends Component
 
     public function beforeRender(Event $event)
     {
-        Configure::write('Mixpanel.events', $this->request->session()->read('Mixpanel.events'));
-        Configure::write('Mixpanel.register', $this->request->session()->read('Mixpanel.register'));
+        /** @var \Cake\Network\Session $session */
+        $session = $event->subject()->request->session();
+
+        Configure::write('Mixpanel.events', $session->read('Mixpanel.events'));
+        Configure::write('Mixpanel.register', $session->read('Mixpanel.register'));
         Configure::write('Mixpanel.settings', $this->config());
-        $this->request->session()->delete('Mixpanel.events');
-        $this->request->session()->delete('Mixpanel.register');
+        $session->delete('Mixpanel.events');
+        $session->delete('Mixpanel.register');
     }
 
     /**
