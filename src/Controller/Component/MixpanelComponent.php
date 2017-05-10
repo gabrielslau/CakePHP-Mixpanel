@@ -16,6 +16,17 @@ class MixpanelComponent extends Component
 
     public function startup(Event $event)
     {
+        $this->setupInitialConfiguration($event->subject());
+    }
+
+    /**
+     * Load the API into a class property and allow access to it.
+     *
+     * @throws \InvalidArgumentException
+     * @throws \Cake\Core\Exception\Exception
+     */
+    public function setupInitialConfiguration($controller)
+    {
         $this->config([
             'token' => Configure::read('Mixpanel.token'),
             'options' => (array)Configure::read('Mixpanel.options'),
@@ -23,7 +34,7 @@ class MixpanelComponent extends Component
         ]);
 
         /** @var \Cake\Network\Session $session */
-        $session = $event->subject()->request->session();
+        $session = $controller->request->session();
 
         if (!$session->check('Mixpanel.events')) {
             $session->write('Mixpanel.events', []);
@@ -46,15 +57,21 @@ class MixpanelComponent extends Component
 
     /**
      * @return \Mixpanel
+     * @throws \InvalidArgumentException
+     * @throws \Cake\Core\Exception\Exception
      */
     public function getInstance()
     {
+        if ($this->Mixpanel === null) {
+            $this->setupInitialConfiguration($this->_registry->getController());
+        }
+
         return $this->Mixpanel;
     }
 
     public function identify($id)
     {
-        $this->Mixpanel->identify($id);
+        $this->getInstance()->identify($id);
         $this->config('id', $id);
     }
 
@@ -65,7 +82,7 @@ class MixpanelComponent extends Component
 
     public function people($id, array $properties = [])
     {
-        $this->Mixpanel->people->set($id, $properties);
+        $this->getInstance()->people->set($id, $properties);
         $this->config('people.identify', $id);
         $this->config('people.set', $properties);
     }
@@ -77,6 +94,8 @@ class MixpanelComponent extends Component
      * @param array $properties Array of key => value properties to register
      *
      * @return void
+     * @throws \InvalidArgumentException
+     * @throws \Cake\Core\Exception\Exception
      * @author David Kullmann
      */
     public function register(array $properties)
@@ -89,13 +108,13 @@ class MixpanelComponent extends Component
         }
         $this->request->session()->write('Mixpanel.register', $register);
 
-        $this->Mixpanel->registerAll($properties);
+        $this->getInstance()->registerAll($properties);
     }
 
     public function track($event, array $properties = [])
     {
         // send event to mixpanel
-        $this->Mixpanel->track($event, $properties);
+        $this->getInstance()->track($event, $properties);
 
         // configure Mixpanel events to render in javascript embed script
         $events = $this->request->session()->read('Mixpanel.events');
@@ -104,21 +123,22 @@ class MixpanelComponent extends Component
     }
 
     /**
-     * Handles behavior delegation + dynamic finders.
-     *
-     * If your Table uses any behaviors you can call them as if
-     * they were on the table object.
+     * Calls the original methods of the Mixpanel SDK
      *
      * @param string $method name of the method to be invoked
      * @param array  $args   List of arguments passed to the function
      *
      * @return mixed
+     * @throws \InvalidArgumentException
+     * @throws \Cake\Core\Exception\Exception
      * @throws \BadMethodCallException
      */
     public function __call($method, $args)
     {
-        if (method_exists($this->Mixpanel, $method)) {
-            return call_user_func_array([$this->Mixpanel, $method], $args);
+        $instance = $this->getInstance();
+
+        if (method_exists($instance, $method)) {
+            return call_user_func_array([$instance, $method], $args);
         }
 
         throw new \BadMethodCallException(
