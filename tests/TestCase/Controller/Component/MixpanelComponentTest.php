@@ -9,7 +9,7 @@ use Cake\TestSuite\TestCase;
 /**
  * Class MixpanelComponentTest
  *
- * @property \CakephpMixpanel\Test\TestApp\Controller\TestController $Controller
+ * @property \Cake\Controller\Controller $Controller
  * @property \CakephpMixpanel\Controller\Component\MixpanelComponent $Mixpanel
  *
  * @package CakephpMixpanel\Test\TestCase\Controller\Component
@@ -43,11 +43,6 @@ class MixpanelComponentTest extends TestCase
         parent::tearDown();
     }
 
-    /**
-     * FlashComponentTest::testTransientMessage()
-     *
-     * @return void
-     */
     public function testMixpanelLibraryInstance()
     {
         $instance = $this->Mixpanel->getInstance();
@@ -75,20 +70,5 @@ class MixpanelComponentTest extends TestCase
 
         $this->assertCount(1, $properties);
         $this->assertEquals(1, $properties['number']);
-    }
-}
-
-/**
- * Use Controller instead of AppController to avoid conflicts
- *
- * @property \CakephpMixpanel\Controller\Component\MixpanelComponent $Mixpanel
- */
-class TestController extends Controller
-{
-    public function initialize()
-    {
-        parent::initialize();
-
-        $this->loadComponent('CakephpMixpanel.Mixpanel');
     }
 }
