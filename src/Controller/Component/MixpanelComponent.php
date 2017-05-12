@@ -82,7 +82,14 @@ class MixpanelComponent extends Component
 
     public function people($id, array $properties = [])
     {
-        $this->getInstance()->people->set($id, $properties);
+        $clientIP = null;
+
+        if(PHP_SAPI !== 'cli'){
+            $clientIP = $this->request->clientIp();
+            $properties['$ip'] = $this->request->clientIp();
+        }
+
+        $this->getInstance()->people->set($id, $properties, $clientIP, true);
         $this->config('people.set', $properties);
     }
 
@@ -112,6 +119,11 @@ class MixpanelComponent extends Component
 
     public function track($event, array $properties = [])
     {
+        if(PHP_SAPI !== 'cli') {
+            $properties['$ip'] = $this->request->clientIp();
+            $properties['$referring_domain'] = $this->request->domain(2);
+        }
+
         // send event to mixpanel
         $this->getInstance()->track($event, $properties);
 
