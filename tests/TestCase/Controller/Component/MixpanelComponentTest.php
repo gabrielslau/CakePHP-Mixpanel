@@ -62,6 +62,20 @@ class MixpanelComponentTest extends TestCase
         $this->assertEquals(1, $events[0]['properties']['number']);
     }
 
+    public function testTrackWithMetatags()
+    {
+        $_SERVER['HTTP_USER_AGENT'] = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/57.0.2987.133 Safari/537.36';
+        $_SERVER['HTTP_ACCEPT_LANGUAGE'] = 'en-US,en;q=0.8,pt-BR;q=0.6,pt;q=0.4';
+
+        $this->Mixpanel->config('include_metatags_cli', true);
+
+        $this->Mixpanel->track('test_event', ['number' => 1]);
+
+        $events = (array)$this->Controller->request->session()->read('Mixpanel.events');
+
+        $this->assertArrayHasKey('$browser', $events[0]['properties']);
+    }
+
     public function testRegister()
     {
         $this->Mixpanel->register(['number' => 1]);

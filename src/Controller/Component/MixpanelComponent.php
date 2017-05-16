@@ -14,6 +14,33 @@ class MixpanelComponent extends Component
      */
     private $Mixpanel;
 
+    public $components = ['CakephpClientInfo.ClientInfo'];
+
+    /**
+     * @param array $config custom config
+     * @throws \Cake\Core\Exception\Exception
+     */
+    public function initialize(array $config = [])
+    {
+        parent::initialize($config);
+
+        $this->config([
+            'token' => Configure::read('Mixpanel.token'),
+            'options' => (array)Configure::read('Mixpanel.options'),
+            'properties' => [],
+            'include_metatags' => true,
+            'include_metatags_cli' => false
+        ]);
+        $this->config($config);
+    }
+
+    /**
+     * @param \Cake\Event\Event $event event instance
+     *
+     * @return void
+     * @throws \Cake\Core\Exception\Exception
+     * @throws \InvalidArgumentException
+     */
     public function startup(Event $event)
     {
         $this->setupInitialConfiguration($event->subject());
@@ -22,18 +49,14 @@ class MixpanelComponent extends Component
     /**
      * Load the API into a class property and allow access to it.
      *
-     * @throws \InvalidArgumentException
+     * @param object|\Cake\Controller\Controller $controller Controller object
+     *
+     * @return void
      * @throws \Cake\Core\Exception\Exception
      */
     public function setupInitialConfiguration($controller)
     {
-        $this->config([
-            'token' => Configure::read('Mixpanel.token'),
-            'options' => (array)Configure::read('Mixpanel.options'),
-            'properties' => [],
-        ]);
-
-        /** @var \Cake\Network\Session $session */
+        /* @var \Cake\Network\Session $session */
         $session = $controller->request->session();
 
         if (!$session->check('Mixpanel.events')) {
@@ -45,7 +68,7 @@ class MixpanelComponent extends Component
 
     public function beforeRender(Event $event)
     {
-        /** @var \Cake\Network\Session $session */
+        /* @var \Cake\Network\Session $session */
         $session = $event->subject()->request->session();
 
         Configure::write('Mixpanel.events', $session->read('Mixpanel.events'));
@@ -75,7 +98,7 @@ class MixpanelComponent extends Component
         $this->config('identify', $id);
     }
 
-    public function name_tag($name)
+    public function nameTag($name)
     {
         $this->config('name_tag', $name);
     }
@@ -84,9 +107,12 @@ class MixpanelComponent extends Component
     {
         $clientIP = null;
 
-        if(PHP_SAPI !== 'cli'){
+        if ($this->includeMetatags()) {
             $clientIP = $this->request->clientIp();
-            $properties['$ip'] = $this->request->clientIp();
+            $properties['ip'] = $clientIP;
+            $properties['$browser'] = $this->ClientInfo->browser();
+            $properties['$browser_version'] = $this->ClientInfo->browserVersion();
+            $properties['$os'] = $this->ClientInfo->os();
         }
 
         $this->getInstance()->people->set($id, $properties, $clientIP, true);
@@ -119,9 +145,15 @@ class MixpanelComponent extends Component
 
     public function track($event, array $properties = [])
     {
-        if(PHP_SAPI !== 'cli') {
-            $properties['$ip'] = $this->request->clientIp();
+        if ($this->includeMetatags()) {
+            $properties['ip'] = $this->request->clientIp();
             $properties['$referring_domain'] = $this->request->domain(2);
+            $properties['$referrer'] = $this->request->referer();
+            $properties['$browser'] = $this->ClientInfo->browser();
+            $properties['$browser_version'] = $this->ClientInfo->browserVersion();
+            $properties['$device'] = $this->ClientInfo->device();
+            $properties['$os'] = $this->ClientInfo->os();
+            $properties['$current_url'] = $this->request->here();
         }
 
         // send event to mixpanel
@@ -131,6 +163,12 @@ class MixpanelComponent extends Component
         $events = $this->request->session()->read('Mixpanel.events');
         $events[] = compact('event', 'properties');
         $this->request->session()->write('Mixpanel.events', $events);
+    }
+
+    private function includeMetatags()
+    {
+        return $this->config('include_metatags') === true &&
+            (PHP_SAPI !== 'cli' || $this->config('include_metatags_cli') === true);
     }
 
     /**
