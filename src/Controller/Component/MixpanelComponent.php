@@ -5,6 +5,7 @@ namespace CakephpMixpanel\Controller\Component;
 use Cake\Controller\Component;
 use Cake\Core\Configure;
 use Cake\Event\Event;
+use Cake\Log\Log;
 use Mixpanel;
 
 /**
@@ -234,8 +235,12 @@ class MixpanelComponent extends Component
     {
         $instance = $this->getInstance();
 
-        if (method_exists($instance, $method)) {
-            return call_user_func_array([$instance, $method], $args);
+        try {
+            if (method_exists($instance, $method)) {
+                return call_user_func_array([$instance, $method], $args);
+            }
+        } catch (\Exception $exception) {
+            Log::error($exception);
         }
 
         throw new \BadMethodCallException(
