@@ -87,7 +87,8 @@ class MixpanelHelperTest extends TestCase
 
         $embed = $this->Mixpanel->embed();
         $expected = <<<HTML
-<script>mixpanel.init("token"); mixpanel.identify("id1");
+<script>mixpanel.init("token"); mixpanel.set_config({debug: true});
+mixpanel.identify("id1");
 mixpanel.name_tag("john");
 mixpanel.register({"number":1});
 mixpanel.track("test_event", {"number":1});
