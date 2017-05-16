@@ -4,6 +4,8 @@
     processIsolation="false"
     stopOnFailure="false"
     syntaxCheck="false"
+    bootstrap="./tests/bootstrap.php"
+    backupGlobals="true"
     >
     <php>
         <ini name="memory_limit" value="-1"/>
@@ -18,10 +20,15 @@
         <!-- Add plugin test suites here. -->
     </testsuites>
 
-    <!-- Ignore vendor tests in code coverage reports -->
     <filter>
+        <!-- Ignore vendor tests in code coverage reports -->
         <blacklist>
             <directory suffix=".php">./vendor/</directory>
         </blacklist>
+
+        <!-- Prevent coverage reports from looking in tests, vendors, config folders -->
+        <whitelist>
+            <directory suffix=".php">./src/</directory>
+        </whitelist>
     </filter>
 </phpunit>

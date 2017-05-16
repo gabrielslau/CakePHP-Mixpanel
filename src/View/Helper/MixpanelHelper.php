@@ -24,6 +24,9 @@ class MixpanelHelper extends Helper
         );
     }
 
+    /**
+     * @return string
+     */
     public function embed()
     {
         $settings = Configure::read('Mixpanel.settings');

@@ -2,11 +2,11 @@
 
 namespace CakephpMixpanel\Test\TestCase\View\Helper;
 
+use CakephpMixpanel\View\Helper\MixpanelHelper;
 use Cake\Controller\Controller;
 use Cake\Core\Configure;
 use Cake\TestSuite\TestCase;
 use Cake\View\View;
-use CakephpMixpanel\View\Helper\MixpanelHelper;
 
 /**
  * Class MixpanelHelperTest
@@ -47,7 +47,7 @@ class MixpanelHelperTest extends TestCase
         $this->Controller->Mixpanel->track('test_event', ['number' => 1]);
         $this->Controller->Mixpanel->register(['number' => 1]);
         $this->Controller->Mixpanel->identify('id1');
-        $this->Controller->Mixpanel->name_tag('john');
+        $this->Controller->Mixpanel->nameTag('john');
         $this->Controller->Mixpanel->people('id1', [
             'email' => 'john@doe.com'
         ]);

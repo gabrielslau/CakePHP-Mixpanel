@@ -7,6 +7,13 @@ use Cake\Core\Configure;
 use Cake\Event\Event;
 use Mixpanel;
 
+/**
+ * Class MixpanelComponent
+ *
+ * @property \CakephpClientInfo\Controller\Component\ClientInfoComponent $ClientInfo
+ *
+ * @package CakephpMixpanel\Controller\Component
+ */
 class MixpanelComponent extends Component
 {
     /**
@@ -18,6 +25,8 @@ class MixpanelComponent extends Component
 
     /**
      * @param array $config custom config
+     *
+     * @return void
      * @throws \Cake\Core\Exception\Exception
      */
     public function initialize(array $config = [])
@@ -66,6 +75,12 @@ class MixpanelComponent extends Component
         $this->Mixpanel = Mixpanel::getInstance($this->config('token'), $this->config('options'));
     }
 
+    /**
+     * @param \Cake\Event\Event $event event instance
+     *
+     * @return void
+     * @throws \Cake\Core\Exception\Exception
+     */
     public function beforeRender(Event $event)
     {
         /* @var \Cake\Network\Session $session */
@@ -92,17 +107,38 @@ class MixpanelComponent extends Component
         return $this->Mixpanel;
     }
 
+    /**
+     * @param string|int $id unique identification
+     *
+     * @return void
+     * @throws \Cake\Core\Exception\Exception
+     * @throws \InvalidArgumentException
+     */
     public function identify($id)
     {
         $this->getInstance()->identify($id);
         $this->config('identify', $id);
     }
 
+    /**
+     * @param string $name user's name
+     *
+     * @return void
+     * @throws \Cake\Core\Exception\Exception
+     */
     public function nameTag($name)
     {
         $this->config('name_tag', $name);
     }
 
+    /**
+     * @param string|int $id         unique id
+     * @param array      $properties additional information
+     *
+     * @return void
+     * @throws \Cake\Core\Exception\Exception
+     * @throws \InvalidArgumentException
+     */
     public function people($id, array $properties = [])
     {
         $clientIP = null;
@@ -143,6 +179,14 @@ class MixpanelComponent extends Component
         $this->getInstance()->registerAll($properties);
     }
 
+    /**
+     * @param string $event      event instance
+     * @param array  $properties additional information
+     *
+     * @return void
+     * @throws \Cake\Core\Exception\Exception
+     * @throws \InvalidArgumentException
+     */
     public function track($event, array $properties = [])
     {
         if ($this->includeMetatags()) {
@@ -165,6 +209,10 @@ class MixpanelComponent extends Component
         $this->request->session()->write('Mixpanel.events', $events);
     }
 
+    /**
+     * @return bool
+     * @throws \Cake\Core\Exception\Exception
+     */
     private function includeMetatags()
     {
         return $this->config('include_metatags') === true &&
